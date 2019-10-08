@@ -6,6 +6,7 @@
     "@reach/dialog": "^0.2.9",
     "@reach/tabs": "^0.1.6",
     "@reach/visually-hidden": "^0.1.4",
+    "netlify-lambda": "^1.6.3",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
     "react-netlify-identity": "^0.1.9",
@@ -16,6 +17,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "start:functions": "netlify-lambda serve src/functions",
+    "build:functions": "netlify-lambda build src/functions",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -33,5 +36,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "dotenv": "^8.1.0"
   }
 }

@@ -11,6 +11,10 @@ function App() {
 
   console.log(identity);
 
+  // get access on how to drink scotch
+  // 1. pour in cup
+  // 2. drink it
+
   const name =
     (identity &&
       identity.user &&
@@ -69,7 +73,7 @@ function App() {
 
 export default function() {
   return (
-    <IdentityContextProvider url={'https://react-stripe.netlify.com'}>
+    <IdentityContextProvider url={'https://netlify-react-stripe.netlify.com'}>
       <App />
     </IdentityContextProvider>
   );
