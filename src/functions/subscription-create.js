@@ -84,7 +84,7 @@ exports.handler = async (event, context, callback) => {
     //-- create a subscription
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
-      items: [{ plan: 'plan_Fv6CRXcGjHi16a' }]
+      items: [{ plan }]
     });
 
     console.log({ subscription });
