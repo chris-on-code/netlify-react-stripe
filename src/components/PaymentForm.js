@@ -40,6 +40,8 @@ function PaymentForm({ stripe }) {
     }
   }
 
+  if (!user) return <div>Please login</div>;
+
   return (
     <form onSubmit={handleSubmit}>
       payment form goes here
