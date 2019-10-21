@@ -1,6 +1,6 @@
 [build]
-  command = "yarn build && yarn build:functions"
-  functions = "functions-built"
+  command = "yarn build"
+  functions = "functions"
   publish = "build"
 
 [[redirects]]
