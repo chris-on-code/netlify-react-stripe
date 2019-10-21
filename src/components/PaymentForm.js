@@ -40,7 +40,7 @@ function PaymentForm({ stripe }) {
     }
   }
 
-  if (!user) return <div>Please login</div>;
+  if (!user) return <div>Please login.</div>;
 
   return (
     <form onSubmit={handleSubmit}>
