@@ -1,23 +1,12 @@
-import axios from 'axios';
+import updateUser from './helpers/update-user';
+import createResponse from './helpers/create-response';
 
-require('dotenv').config();
-
+require('dotenv').config(); // needed for stripe
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type'
-};
 
 /**
  * Helper function to respond with a full object
  */
-function createResponseObject(statusCode = 200, message = '', data = {}) {
-  return {
-    statusCode,
-    headers,
-    body: JSON.stringify({ message, ...data })
-  };
-}
 
 /**
  * Is the string JSON?
@@ -33,46 +22,21 @@ function hasJsonStructure(str) {
   }
 }
 
-/*
- Update the app_metadata of a user
-*/
-function updateUser(identity, user, app_metadata) {
-  const new_app_metadata = { ...user.app_metadata, ...app_metadata };
-
-  return axios.put(
-    `${identity.url}/admin/users/${user.id}`,
-    {
-      app_metadata: new_app_metadata
-    },
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${identity.token}`
-      }
-    }
-  );
-}
-
-/**
- * Handle the thing
- */
-exports.handler = async (event, context) => {
-  //-- only handle POST requests
-  if (event.httpMethod !== 'POST' || !event.body) {
-    return createResponseObject(400, 'Only POST requests allowed or no data.');
-  }
-
+exports.handler = async function(event, context) {
   //-- make sure we have a user
   const { identity, user } = context.clientContext;
-  if (!user) {
-    return createResponseObject(400, 'No user logged in.');
-  }
+  if (!user) return createResponse(400, 'No user logged in.');
+
+  //-- only handle POST requests
+  if (event.httpMethod !== 'POST')
+    return createResponse(400, 'Only POST requests allowed or no data.');
 
   //-- check if our data is formed as actual JSON
   if (!hasJsonStructure(event.body)) {
-    return createResponseObject(400, 'Data needs to be JSON format.');
+    return createResponse(400, 'Data needs to be JSON format.');
   }
+
+  // TODO: validate the stripe plan being sent through
 
   //-- parse the body contents into an object.
   const data = JSON.parse(event.body);
@@ -81,7 +45,7 @@ exports.handler = async (event, context) => {
 
   //-- make sure we have all required data. otherwise, escape
   if (!token || !plan) {
-    return createResponseObject(400, 'Missing Stripe token or Stripe plan.');
+    return createResponse(400, 'Missing Stripe token or Stripe plan.');
   }
 
   try {
@@ -106,12 +70,12 @@ exports.handler = async (event, context) => {
     console.log({ updateUserData });
 
     // return everything to our client
-    return createResponseObject(200, 'Subscription created!', {
+    return createResponse(200, 'Subscription created!', {
       customer,
       subscription
     });
   } catch (err) {
     console.error(err);
-    return createResponseObject(400, "Customer couldn't be created.");
+    return createResponse(400, "Customer couldn't be created.");
   }
 };

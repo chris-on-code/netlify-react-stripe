@@ -1,38 +1,38 @@
-/* code from functions/todos-read-all.js */
-import faunadb from 'faunadb';
+import { all } from './services/todo-service';
+import middy from 'middy';
+import { jsonBodyParser, validator, httpErrorHandler } from 'middy/middlewares';
 
-const q = faunadb.query;
-const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SECRET
-});
+async function handler(event, context) {
+  try {
+    const todos = await all();
 
-exports.handler = (event, context, callback) => {
-  console.log('Function `todo-read-all` invoked');
+    return {
+      statusCode: 200,
+      body: JSON.stringify(todos)
+    };
+  } catch (error) {
+    console.log('error', error);
+    return {
+      statusCode: 400,
+      body: JSON.stringify(error)
+    };
+  }
+}
 
-  return client
-    .query(q.Paginate(q.Match(q.Ref('indexes/all_todos'))))
-    .then(response => {
-      const todoRefs = response.data;
-      console.log('Todo refs', todoRefs);
-      console.log(`${todoRefs.length} todos found`);
-      // create new query out of todo refs. http://bit.ly/2LG3MLg
-      const getAllTodoDataQuery = todoRefs.map(ref => {
-        return q.Get(ref);
-      });
-      // then query the refs
-      return client.query(getAllTodoDataQuery).then(ret => {
-        return callback(null, {
-          statusCode: 200,
-          body: JSON.stringify(ret)
-        });
-      });
-    })
-    .catch(error => {
-      console.log('error', error);
-
-      return callback(null, {
-        statusCode: 400,
-        body: JSON.stringify(error)
-      });
-    });
+const inputSchema = {
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' }
+      },
+      required: []
+    }
+  }
 };
+
+exports.handler = middy(handler)
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema }))
+  .use(httpErrorHandler());

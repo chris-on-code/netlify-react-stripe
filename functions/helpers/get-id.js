@@ -1,3 +1,3 @@
-export default function getId(urlPath) {
+export default function(urlPath) {
   return urlPath.match(/([^\/]*)\/*$/)[0];
 }

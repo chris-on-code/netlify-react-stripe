@@ -1,29 +1,25 @@
-/* code from functions/todos-read.js */
 import faunadb from 'faunadb';
-import getId from './utils/getId';
+import getId from './helpers/get-id';
 
 const q = faunadb.query;
-const client = new faunadb.Client({
-  secret: process.env.FAUNADB_SECRET
-});
+const client = new faunadb.Client({ secret: process.env.FAUNADB_SECRET });
 
-exports.handler = (event, context, callback) => {
+exports.handler = async function(event, context) {
   const id = getId(event.path);
   console.log(`Function 'todo-read' invoked. Read id: ${id}`);
-  return client
-    .query(q.Get(q.Ref(`classes/todos/${id}`)))
-    .then(response => {
-      console.log('success', response);
-      return callback(null, {
-        statusCode: 200,
-        body: JSON.stringify(response)
-      });
-    })
-    .catch(error => {
-      console.log('error', error);
-      return callback(null, {
-        statusCode: 400,
-        body: JSON.stringify(error)
-      });
-    });
+
+  try {
+    const response = await client.query(q.Get(q.Ref(`classes/todos/${id}`)));
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response)
+    };
+  } catch (error) {
+    console.log('error', error);
+    return {
+      statusCode: 400,
+      body: JSON.stringify(error)
+    };
+  }
 };
