@@ -3,8 +3,8 @@
  * In this case FaunaDB
  */
 
-import fetch from 'node-fetch';
-import faunadb from 'faunadb';
+const fetch = require('node-fetch');
+const faunadb = require('faunadb');
 
 const q = faunadb.query;
 const client = new faunadb.Client({ secret: process.env.FAUNADB_SECRET });

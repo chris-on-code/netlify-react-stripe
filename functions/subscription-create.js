@@ -1,7 +1,7 @@
-import updateUser from './helpers/update-user';
-import createResponse from './helpers/create-response';
-
 require('dotenv').config(); // needed for stripe
+
+const updateUser = require('./helpers/update-user');
+const createResponse = require('./helpers/create-response');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 /**

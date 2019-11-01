@@ -1,6 +1,5 @@
+const createResponse = require('./helpers/create-response');
+
 exports.handler = async function() {
-  return {
-    statusCode: 200,
-    body: 'Hello, World'
-  };
+  return createResponse(200, 'awesome!');
 };

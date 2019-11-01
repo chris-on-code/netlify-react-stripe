@@ -1,3 +1,3 @@
-export default function(urlPath) {
+module.exports = function(urlPath) {
   return urlPath.match(/([^\/]*)\/*$/)[0];
-}
+};
